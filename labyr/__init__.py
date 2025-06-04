@@ -1,18 +1,27 @@
-from typing import Any
+from typing import Any, Callable, Dict, List, Tuple
+
+from utils.color import C
 
 __all__ = ["labyr", "LabyrGame"]
 
 
-def genlvls(chars: dict[str, str], lvlSizes: dict[int, tuple[int, int]]):
+def genlvls(
+    chars: Dict[str, Tuple[str, Callable]],
+    lvlSizes: Dict[int, Tuple[int, int]],
+    *,
+    c: C,
+):
     out = {}
-    SPACE_DEFAULT = " "
-    PLAYER_DEFAULT = "@"
-    WALL_DEFAULT = "#"
-    EXIT_DEFAULT = "E"
+    SPACE_DEFAULT = (".", c.dark_gray)
+    WALL_DEFAULT = ("#", c.dark_gray)
+    PLAYER_DEFAULT = ("@", c.blue)
+    EXIT_DEFAULT = ("E", c.green)
+    MONSTER_DEFAULT = ("M", c.red)
 
-    def init(x: int, y: int) -> list[list[str]]:
-        space = chars.get("space", SPACE_DEFAULT)
-        grid = [[space] * y for _ in range(x)]
+    def init(dimen: Tuple[int, int]) -> List[List[str]]:
+        space = chars.get("space", SPACE_DEFAULT)[0]
+        x, y = dimen
+        grid = [[space] * x for _ in range(y)]
 
         for i in range(x):
             for j in range(y):
@@ -21,20 +30,25 @@ def genlvls(chars: dict[str, str], lvlSizes: dict[int, tuple[int, int]]):
 
         return grid
 
-    print(init(lvlSizes[0][0], lvlSizes[0][1]))
+    for lvl, dimen in lvlSizes.items():
+        out[lvl] = init(dimen)
+
+    print(out)
 
 
 class LabyrGame:
     def __init__(self) -> None:
+        c = C()
         self.clvl = 0
         self.chars = {
-            "space": ".",
-            "wall": "#",
-            "player": "@",
-            "exit": "E",
+            "space": (".", c.dark_gray),
+            "wall": ("#", c.dark_gray),
+            "player": ("@", c.blue),
+            "exit": ("E", c.green),
+            "monster": ("M", c.red),
         }
-        lvlSizes = {0: (3, 5)}
-        levels = genlvls(self.chars, lvlSizes)
+        lvlSizes = {0: (5, 3)}
+        levels = genlvls(self.chars, lvlSizes, c=c)
 
 
 labyr = LabyrGame()
