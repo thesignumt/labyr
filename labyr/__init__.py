@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Tuple
 
-from .utils.color import C
+from .utils import color
 
 __all__ = ["labyr", "LabyrGame"]
 
@@ -9,7 +9,7 @@ def genlvls(
     chars: Dict[str, Tuple[str, Callable]],
     lvlSizes: Dict[int, Tuple[int, int]],
     *,
-    c: C,
+    c: color.C,
 ):
     out = {}
     SPACE_DEFAULT = (".", c.dark_gray)
@@ -38,7 +38,7 @@ def genlvls(
 
 class LabyrGame:
     def __init__(self) -> None:
-        c = C()
+        c = color.C()
         self.clvl = 0
         self.chars = {
             "space": (".", c.dark_gray),
