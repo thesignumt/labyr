@@ -33,7 +33,25 @@ def genlvls(
     for lvl, dimen in lvlSizes.items():
         out[lvl] = init(dimen)
 
-    print(out)
+    return out
+
+
+def cout_labyr(map: List[List[str]], chars: Dict[str, Tuple[str, Callable]]):
+    chmap = dict(list(chars.keys()))
+    print("\n\n")
+    for i in range(len(map)):
+        for j in range(len(map[0])):
+            if map[i][j][-2:] == "  ":
+                ch = map[i][j][0]
+                if ch == "@":
+                    print(ch, end="")
+                elif ch == "E":
+                    print(ch, end="")
+                else:
+                    print(ch, end="")
+            elif map[i][j][:2] == "$M":
+                print("M", end="")
+        print()
 
 
 class LabyrGame:
@@ -49,6 +67,9 @@ class LabyrGame:
         }
         lvlSizes = {0: (5, 3)}
         levels = genlvls(self.chars, lvlSizes, c=c)
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        cout_labyr(self.levels[self.clvl], self.chars)
 
 
 labyr = LabyrGame()
