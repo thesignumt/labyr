@@ -26,7 +26,7 @@ def genlvls(
         for i in range(x):
             for j in range(y):
                 if i == 0 or i == x - 1 or j == 0 or j == y - 1:
-                    grid[i][j] = "#"
+                    grid[j][i] = "#"
 
         return grid
 
