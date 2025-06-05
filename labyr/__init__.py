@@ -37,7 +37,7 @@ def genlvls(
 
 
 def cout_labyr(map: List[List[str]], chars: Dict[str, Tuple[str, Callable]]):
-    chmap = dict(list(chars.keys()))
+    chmap = dict(list(chars.values()))
     print("\n\n")
     for i in range(len(map)):
         for j in range(len(map[0])):
