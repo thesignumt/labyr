@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Tuple
 
-from utils.color import C
+from .utils.color import C
 
 __all__ = ["labyr", "LabyrGame"]
 
