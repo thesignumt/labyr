@@ -37,6 +37,10 @@ def genlvls(
     return out
 
 
+def get_map(d: Dict):
+    return {v[0]: v[1] for k, v in d.items() if not k.isupper()}
+
+
 def cout_labyr(map: List[List[str]], chars: Dict):
     chmap = dict(list(chars.values()))
     print("\n\n")
