@@ -42,7 +42,7 @@ def get_map(d: Dict):
 
 
 def cout_labyr(map: List[List[str]], chars: Dict):
-    chmap = dict(list(chars.values()))
+    chmap = get_map(chars)
     print("\n\n")
     for i in range(len(map)):
         for j in range(len(map[0])):
@@ -79,6 +79,7 @@ class LabyrGame:
         }
         lvlSizes = {0: (5, 3)}
         self.levels = genlvls(self.chars, lvlSizes)
+        print(get_map(self.chars))
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         cout_labyr(self.levels[self.clvl], self.chars)
