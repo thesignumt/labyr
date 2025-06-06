@@ -6,17 +6,12 @@ __all__ = ["labyr", "LabyrGame"]
 
 
 def genlvls(
-    chars: Dict[str, Tuple[str, Callable]],
+    chars: Dict,
     lvlSizes: Dict[int, Tuple[int, int]],
-    *,
-    c: color.C,
 ):
     out = {}
-    SPACE_DEFAULT = (".", c.dark_gray)
-    WALL_DEFAULT = ("#", c.dark_gray)
-    PLAYER_DEFAULT = ("@", c.blue)
-    EXIT_DEFAULT = ("E", c.green)
-    MONSTER_DEFAULT = ("M", c.red)
+    SPACE_DEFAULT = chars["DEFAULTS"]["space"]
+    PLAYER_DEFAULT = chars["DEFAULTS"]["player"]
 
     def init(dimen: Tuple[int, int]) -> List[List[str]]:
         space = chars.get("space", SPACE_DEFAULT)[0]
@@ -33,23 +28,29 @@ def genlvls(
     for lvl, dimen in lvlSizes.items():
         out[lvl] = init(dimen)
 
+    # lvl configs
+    # out[lvl][y][x]
+
+    # lvl 0 conf
+    out[0][1][1] = chars.get("player", PLAYER_DEFAULT)[0]
+
     return out
 
 
-def cout_labyr(map: List[List[str]], chars: Dict[str, Tuple[str, Callable]]):
+def cout_labyr(map: List[List[str]], chars: Dict):
     chmap = dict(list(chars.values()))
     print("\n\n")
     for i in range(len(map)):
         for j in range(len(map[0])):
-            if map[i][j][-2:] == "  ":
-                ch = map[i][j][0]
+            ch = map[i][j][0]
+            if ch != "$":
                 if ch == "@":
                     print(ch, end="")
                 elif ch == "E":
                     print(ch, end="")
                 else:
                     print(ch, end="")
-            elif map[i][j][:2] == "$M":
+            elif map[i][j][:2] == "$M":  # e.g. str: "$M1" means monster #1
                 print("M", end="")
         print()
 
@@ -59,6 +60,13 @@ class LabyrGame:
         c = color.C()
         self.clvl = 0
         self.chars = {
+            "DEFAULTS": {
+                "space": (".", c.dark_gray),
+                "wall": ("#", c.dark_gray),
+                "player": ("@", c.blue),
+                "exit": ("E", c.green),
+                "monster": ("M", c.red),
+            },
             "space": (".", c.dark_gray),
             "wall": ("#", c.dark_gray),
             "player": ("@", c.blue),
@@ -66,7 +74,7 @@ class LabyrGame:
             "monster": ("M", c.red),
         }
         lvlSizes = {0: (5, 3)}
-        levels = genlvls(self.chars, lvlSizes, c=c)
+        self.levels = genlvls(self.chars, lvlSizes)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         cout_labyr(self.levels[self.clvl], self.chars)
