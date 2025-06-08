@@ -46,11 +46,12 @@ def cout_labyr(map: list[list[str]], chars: dict):
     print("\n\n")
     for i in range(len(map)):
         for j in range(len(map[0])):
-            ch = map[i][j][0]
-            if ch != "$" and ch in list(chmap.keys()):
+            cell = map[i][j]
+            ch = cell[0]
+            if ch != "$" and ch in chmap:
                 print(chmap[ch](ch), end="")
-            elif map[i][j][:2] == "$M":  # e.g. str: "$M1" means monster #1
-                print(chmap[ch]("M"), end="")
+            elif cell.startswith("$M"):  # e.g. str: "$M1" means monster #1
+                print(chmap["M"]("M"), end="")
         print()
 
 
