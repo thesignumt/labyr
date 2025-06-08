@@ -2,7 +2,7 @@ from typing import Any, Callable, Union
 
 from icecream import ic as _ic
 
-from .utils import color
+from .utils import color, getchar
 from .utils.transform import get_map, transform
 
 __all__ = ["labyr", "LabyrGame"]
@@ -13,11 +13,9 @@ def genlvls(
     lvlSizes: dict[int, tuple[int, int]],
 ):
     out = {}
-    SPACE_DEFAULT = chars["DEFAULTS"]["space"]
-    PLAYER_DEFAULT = chars["DEFAULTS"]["player"]
 
     def init(dimen: tuple[int, int]) -> list[list[str]]:
-        space = chars.get("space", SPACE_DEFAULT)[0]
+        space = getchar(chars, "space")[0]
         x, y = dimen
         grid = [[space] * x for _ in range(y)]
 
@@ -35,7 +33,8 @@ def genlvls(
     # out[lvl][y][x]
 
     # lvl 0 conf
-    out[0][1][1] = chars.get("player", PLAYER_DEFAULT)[0]
+    out[0][1][1] = getchar(chars, "player")[0]
+    out[0][1][5] = getchar(chars, "exit")[0]
 
     return out
 
