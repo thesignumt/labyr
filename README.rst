@@ -2,6 +2,7 @@
    :target: https://pypi.org/project/labyr
    :alt: Latest Version
  
-# labyr
+labyr
+=====
 
 A labyrinth game
