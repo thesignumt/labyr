@@ -1,2 +1,2 @@
-def getch(d, arg, defaults):
-    return d.get(arg, defaults[arg])
+def getchar(d, arg):
+    return d.get(arg, d["DEFAULTS"][arg])

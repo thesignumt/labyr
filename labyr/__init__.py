@@ -42,8 +42,6 @@ def genlvls(
 
 def cout_labyr(map: list[list[str]], chars: dict):
     chmap = get_map(chars)
-    # def getch(d, arg):
-    #     return d.get(arg, chars["DEFAULTS"][arg])
     # dict(transform(["player", "exit", "wall", "space"], lambda arg: getch(chars, arg)))
 
     print("\n\n")
@@ -75,7 +73,7 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        lvlSizes = {0: (5, 3)}
+        lvlSizes = {0: (7, 3)}
         self.levels = genlvls(self.chars, lvlSizes)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
