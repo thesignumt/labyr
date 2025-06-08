@@ -17,7 +17,13 @@ def callback(action):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="labyr: a labyrinth game")
+    parser = argparse.ArgumentParser(
+        description="""
+        labyr: a labyrinth game
+        
+        DISCLAIMER: if you run labyr, each frame will clear the terminal screen.
+        """
+    )
     parser.add_argument(
         "-v",
         "--version",
