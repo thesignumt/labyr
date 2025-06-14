@@ -1,32 +1,23 @@
 import argparse
 from importlib.metadata import PackageNotFoundError, version
 
-from .__init__ import labyr
-
 
 def get_version():
     try:
-        return version("labyr")  # pypi project name
+        return version("labyr")
     except PackageNotFoundError:
         return "unknown"
 
 
-def callback(action):
-    match action:
-        case "run":
-            labyr()
+def run_labyr():
+    from .__init__ import labyr
 
-        case "nil":
-            pass
+    labyr()
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="""
-        labyr: a labyrinth game
-        
-        DISCLAIMER: if you run labyr, each frame will clear the terminal screen.
-        """
+        description="labyr: a labyrinth game\n\nDISCLAIMER: if you run labyr, each frame will clear the terminal screen."
     )
     parser.add_argument(
         "-v",
@@ -35,17 +26,14 @@ def main():
         version=f"labyr {get_version()}",
         help="Show labyr version",
     )
-
-    allowed_actions = ["run", "nil"]
-
     parser.add_argument(
         "action",
-        choices=allowed_actions,
-        help=f"Action to perform. Allowed values: {', '.join(allowed_actions)}",
+        choices=["run", "nil"],
+        help="Action to perform. Allowed values: run, nil",
     )
-
     args = parser.parse_args()
-    callback(args.action)
+    actions = {"run": run_labyr, "nil": lambda: None}
+    actions[args.action]()
 
 
 if __name__ == "__main__":
