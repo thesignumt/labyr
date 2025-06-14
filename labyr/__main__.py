@@ -17,7 +17,7 @@ def run_labyr():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="labyr: a labyrinth game\n\nDISCLAIMER: if you run labyr, each frame will clear the terminal screen."
+        description="labyr: a labyrinth game || DISCLAIMER: if you run labyr, each frame will clear the terminal screen."
     )
     parser.add_argument(
         "-v",
