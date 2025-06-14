@@ -12,8 +12,12 @@ def get_version():
 
 
 def callback(action):
-    if action == "run":
-        labyr()
+    match action:
+        case "run":
+            labyr()
+
+        case "nil":
+            pass
 
 
 def main():
@@ -32,7 +36,7 @@ def main():
         help="Show labyr version",
     )
 
-    allowed_actions = ["run"]
+    allowed_actions = ["run", "nil"]
 
     parser.add_argument(
         "action",
