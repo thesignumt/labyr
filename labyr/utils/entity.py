@@ -1,26 +1,33 @@
-from typing import Any
-
 from . import getchar
-
-
-class EntMan:
-    """entity manager"""
-
-    def __init__(self, levels: dict) -> None:
-        pass
-
-    def __getattribute__(self, name: str, /) -> Any:
-        if name.startswith("l"):
-            lvl = name[-1]
-            print(lvl)
-        else:
-            print("not lvl idx")
 
 
 class Player:
     def __init__(self, x, y) -> None:
         self.x = x
         self.y = y
+
+
+class EntMan:
+    """entity manager"""
+
+    def __init__(self, levels: dict[int, list[list[str]]], chars) -> None:
+        self.lvls = levels
+        self._entities = {}
+
+        def retTable(matrix: list[list[str]]):
+            out = {}
+            player_char = getchar(chars, "player")[0]
+            for y, row in enumerate(matrix):
+                for x, char in enumerate(row):
+                    if char == player_char:
+                        out["player"] = Player(x, y)
+            return out
+
+        for lvl, lmap in levels.items():
+            self._entities[lvl] = retTable(lmap)
+
+    def get(self, lvl: int, entity: str):
+        return self._entities[lvl][entity]
 
 
 def handlemove(chars, curMap: list, entity: Player, move: str):

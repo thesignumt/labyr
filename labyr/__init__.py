@@ -1,8 +1,9 @@
+from os import _exit
+from threading import Thread
 from typing import Any, Callable, Union
 
-from icecream import ic as _ic
-
-from .utils import color, getchar
+from .utils import clsscr, color, getch, getchar
+from .utils.entity import EntMan, Player, handlemove
 from .utils.transform import get_map, transform
 
 __all__ = ["labyr", "LabyrGame"]
@@ -75,9 +76,25 @@ class LabyrGame:
         }
         lvlSizes = {0: (7, 3)}
         self.levels = genlvls(self.chars, lvlSizes)
+        self.entman = EntMan(self.levels, self.chars)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        cout_labyr(self.levels[self.clvl], self.chars)
+        running: bool = True
+        while running:
+            clsscr()
+            cmap = self.levels[self.clvl]
+            cout_labyr(cmap, self.chars)
+            move = getch().lower()
+
+            if move in ["w", "a", "s", "d"]:
+                handlemove(
+                    self.chars,
+                    self.levels[self.clvl],
+                    self.entman.get(self.clvl, "player"),
+                    move,
+                )
+            elif move == "q":
+                _exit(0)
 
 
 labyr = LabyrGame()
