@@ -54,7 +54,7 @@ def genlvls(
     ##.........#
     ############
     out[1][1][1] = player_char
-    out[1][1][-2] = player_char
+    out[1][1][-2] = exit_char
     fill_rect(out[1], (2, 1), (2, 6), wall_char)
     fill_rect(out[1], (4, 2), (4, -3), wall_char)
     fill_rect(out[1], (1, -3), (3, -3), wall_char)
