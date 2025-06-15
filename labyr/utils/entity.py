@@ -52,4 +52,10 @@ def handlemove(chars, curMap: list, entity: Player, move: str, cls):
         curMap[ny][nx] = player_char
         entity.x, entity.y = nx, ny
         if target == exit_char:
+            # sleep(0.25)
+            # curMap[ny][nx] = exit_char
+            # sleep(0.25)
+            # curMap[ny][nx] = player_char
+            # sleep(0.25)
+            # curMap[ny][nx] = exit_char
             cls.clvl += 1
