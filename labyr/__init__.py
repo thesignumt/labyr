@@ -39,39 +39,66 @@ def genlvls(
     player_char = getchar(chars, "player")[0]
     exit_char = getchar(chars, "exit")[0]
 
-    # lvl 0 conf
-    ########
-    ##@...E#
-    ########
-    out[0][1][1] = player_char
-    out[0][1][5] = exit_char
+    def set_chars(out, lvl, positions, char):
+        for y, x in positions:
+            out[lvl][y][x] = char
 
-    # lvl 1 conf
-    ############
-    ##@......#E#
-    ########.#.#
-    ##.......#.#
-    ##.#######.#
-    ##.........#
-    ############
-    out[1][1][1] = player_char
-    out[1][1][-2] = exit_char
-    fill_rect(out[1], (2, 1), (2, 6), wall_char)
-    fill_rect(out[1], (4, 2), (4, -3), wall_char)
-    fill_rect(out[1], (1, -3), (3, -3), wall_char)
+    level_defs = [
+        # lvl 0 conf
+        # #######
+        # #@...E#
+        # #######
+        {"player": [(1, 1)], "exit": [(1, 5)], "walls": [], "spaces": []},
+        # lvl 1 conf
+        # ###########
+        # #@......#E#
+        # #######.#.#
+        # #.......#.#
+        # #.#######.#
+        # #.........#
+        # ###########
+        {
+            "player": [(1, 1)],
+            "exit": [(1, -2)],
+            "walls": [
+                ((2, 1), (2, 6)),
+                ((4, 2), (4, -3)),
+                ((1, -3), (3, -3)),
+            ],
+            "spaces": [],
+        },
+        # lvl 2 conf
+        # ...######...
+        # ####....####
+        # #@...##...E#
+        # ####....####
+        # ...######...
+        {
+            "player": [(2, 1)],
+            "exit": [(2, -2)],
+            "walls": [
+                ((1, 1), (1, 3)),
+                ((1, -4), (1, -2)),
+                ((3, 1), (3, 3)),
+                ((3, -4), (3, -2)),
+                ((2, 5), (2, 6)),
+            ],
+            "spaces": [
+                ((0, 0), (0, 2)),
+                ((-1, 0), (-1, 2)),
+                ((0, -3), (0, -1)),
+                ((-1, -3), (-1, -1)),
+            ],
+        },
+    ]
 
-    # lvl 2 conf
-    # ...######...
-    # ####....####
-    # #@...##...E#
-    # ####....####
-    # ...######...
-    out[2][2][1] = player_char
-    out[2][2][-2] = exit_char
-    fill_rect(out[2], (0, 0), (0, 2), space_char)
-    fill_rect(out[2], (-1, 0), (-1, 2), space_char)
-    fill_rect(out[2], (0, -3), (0, -1), space_char)
-    fill_rect(out[2], (-1, -3), (-1, -1), space_char)
+    for lvl, conf in enumerate(level_defs):
+        set_chars(out, lvl, conf["player"], player_char)
+        set_chars(out, lvl, conf["exit"], exit_char)
+        for start, end in conf["walls"]:
+            fill_rect(out[lvl], start, end, wall_char)
+        for start, end in conf["spaces"]:
+            fill_rect(out[lvl], start, end, space_char)
 
     return out
 
