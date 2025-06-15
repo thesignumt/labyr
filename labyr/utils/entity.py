@@ -39,11 +39,17 @@ def handlemove(chars, curMap: list, entity: Player, move: str):
     dx, dy = move_offsets.get(move, (0, 0))
     nx, ny = x + dx, y + dy
 
-    if 0 <= ny < len(curMap) and 0 <= nx < len(curMap[0]):
-        target = curMap[ny][nx]
-        player_char = getchar(chars, "player")[0]
-        space_char = getchar(chars, "space")[0]
-        if target in (space_char,):
-            curMap[y][x] = space_char
-            curMap[ny][nx] = player_char
-            entity.x, entity.y = nx, ny
+    if not (0 <= ny < len(curMap) and 0 <= nx < len(curMap[0])):
+        return
+
+    player_char = getchar(chars, "player")[0]
+    space_char = getchar(chars, "space")[0]
+    exit_char = getchar(chars, "exit")[0]
+    target = curMap[ny][nx]
+
+    if target in (space_char, exit_char):
+        curMap[y][x] = space_char
+        curMap[ny][nx] = player_char
+        entity.x, entity.y = nx, ny
+        if target == exit_char:
+            winlosehandle()
