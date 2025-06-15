@@ -90,6 +90,25 @@ def genlvls(
                 ((-1, -3), (-1, -1)),
             ],
         },
+        # lvl 3 conf
+        # ###########
+        # #@...#..###
+        # ###.#....E#
+        # #.....#..##
+        # ###########
+        {
+            "player": [(1, 1)],
+            "exit": [(2, -2)],
+            "walls": [
+                ((2, 1), (2, 2)),
+                ((2, 4), (2, 4)),
+                ((1, 5), (1, 5)),
+                ((3, 6), (3, 6)),
+                ((3, -2), (3, -2)),
+                ((1, -3), (1, -2)),
+            ],
+            "spaces": [],
+        },
     ]
 
     for lvl, conf in enumerate(level_defs):
@@ -137,7 +156,7 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5)}
+        lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5)}
         self.levels = genlvls(self.chars, lvlSizes)
         self.entman = EntMan(self.levels, self.chars)
 
