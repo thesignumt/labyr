@@ -9,10 +9,10 @@ def get_version():
         return "unknown"
 
 
-def run_labyr():
+def run_labyr(level=None):
     from .__init__ import labyr
 
-    labyr()
+    labyr(level=level)
 
 
 def main():
@@ -27,12 +27,19 @@ def main():
         help="Show labyr version",
     )
     parser.add_argument(
+        "-l",
+        "--level",
+        type=int,
+        metavar="x",
+        help="Set the labyrinth level (number)",
+    )
+    parser.add_argument(
         "action",
         choices=["run", "nil"],
         help="Action to perform. Allowed values: run, nil",
     )
     args = parser.parse_args()
-    actions = {"run": run_labyr, "nil": lambda: None}
+    actions = {"run": lambda: run_labyr(level=args.level), "nil": lambda: None}
     actions[args.action]()
 
 

@@ -34,6 +34,7 @@ def genlvls(
     # lvl configs
     # out[lvl][y][x]
 
+    space_char = getchar(chars, "space")[0]
     wall_char = getchar(chars, "wall")[0]
     player_char = getchar(chars, "player")[0]
     exit_char = getchar(chars, "exit")[0]
@@ -59,6 +60,19 @@ def genlvls(
     fill_rect(out[1], (4, 2), (4, -3), wall_char)
     fill_rect(out[1], (1, -3), (3, -3), wall_char)
 
+    # lvl 2 conf
+    # ...######...
+    # ####....####
+    # #@...##...E#
+    # ####....####
+    # ...######...
+    out[2][2][1] = player_char
+    out[2][2][-2] = exit_char
+    fill_rect(out[2], (0, 0), (0, 2), space_char)
+    fill_rect(out[2], (-1, 0), (-1, 2), space_char)
+    fill_rect(out[2], (0, -3), (0, -1), space_char)
+    fill_rect(out[2], (-1, -3), (-1, -1), space_char)
+
     return out
 
 
@@ -79,9 +93,9 @@ def cout_labyr(map: list[list[str]], chars: dict):
 
 
 class LabyrGame:
-    def __init__(self) -> None:
+    def __init__(self, *, level=0) -> None:
         c = color.C()
-        self.clvl = 0
+        self.clvl = level if level is not None else 0
         self.chars = {
             "DEFAULTS": {
                 "space": (".", c.dark_gray),
@@ -96,7 +110,7 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        lvlSizes = {0: (7, 3), 1: (11, 7)}
+        lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5)}
         self.levels = genlvls(self.chars, lvlSizes)
         self.entman = EntMan(self.levels, self.chars)
 
