@@ -92,6 +92,7 @@ class LabyrGame:
                     self.levels[self.clvl],
                     self.entman.get(self.clvl, "player"),
                     move,
+                    self,
                 )
             elif move == "q":
                 _exit(0)

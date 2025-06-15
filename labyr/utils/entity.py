@@ -30,7 +30,7 @@ class EntMan:
         return self._entities[lvl][entity]
 
 
-def handlemove(chars, curMap: list, entity: Player, move: str):
+def handlemove(chars, curMap: list, entity: Player, move: str, cls):
     if not isinstance(entity, Player):
         return
 
@@ -52,4 +52,4 @@ def handlemove(chars, curMap: list, entity: Player, move: str):
         curMap[ny][nx] = player_char
         entity.x, entity.y = nx, ny
         if target == exit_char:
-            winlosehandle()
+            cls.clvl += 1
