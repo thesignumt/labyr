@@ -35,7 +35,7 @@ def handlemove(chars, curMap: list, entity: Player, move: str, cls):
         return
 
     x, y = entity.x, entity.y
-    move_offsets = {"w": (0, 1), "a": (-1, 0), "s": (0, -1), "d": (1, 0)}
+    move_offsets = {"w": (0, -1), "a": (-1, 0), "s": (0, 1), "d": (1, 0)}
     dx, dy = move_offsets.get(move, (0, 0))
     nx, ny = x + dx, y + dy
 
