@@ -4,6 +4,7 @@ from typing import Any, Callable, Union
 
 from .utils import clsscr, color, getch, getchar
 from .utils.entity import EntMan, Player, handlemove
+from .utils.fill import fill_rect
 from .utils.transform import get_map, transform
 
 __all__ = ["labyr", "LabyrGame"]
@@ -33,9 +34,30 @@ def genlvls(
     # lvl configs
     # out[lvl][y][x]
 
+    wall_char = getchar(chars, "wall")[0]
+    player_char = getchar(chars, "player")[0]
+    exit_char = getchar(chars, "exit")[0]
+
     # lvl 0 conf
-    out[0][1][1] = getchar(chars, "player")[0]
-    out[0][1][5] = getchar(chars, "exit")[0]
+    ########
+    ##@...E#
+    ########
+    out[0][1][1] = player_char
+    out[0][1][5] = exit_char
+
+    # lvl 1 conf
+    ############
+    ##@......#E#
+    ########.#.#
+    ##.......#.#
+    ##.#######.#
+    ##.........#
+    ############
+    out[1][1][1] = player_char
+    out[1][1][-2] = player_char
+    fill_rect(out[1], (2, 1), (2, 6), wall_char)
+    fill_rect(out[1], (4, 2), (4, -3), wall_char)
+    fill_rect(out[1], (1, -3), (3, -3), wall_char)
 
     return out
 
@@ -74,7 +96,7 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        lvlSizes = {0: (7, 3)}
+        lvlSizes = {0: (7, 3), 1: (11, 7)}
         self.levels = genlvls(self.chars, lvlSizes)
         self.entman = EntMan(self.levels, self.chars)
 
