@@ -11,5 +11,5 @@ def getchar(d, arg):
     return d.get(arg, d["DEFAULTS"][arg])
 
 
-def clsscr():
+def clsscr(*args):
     system("cls" if os.name == "nt" else "clear")
