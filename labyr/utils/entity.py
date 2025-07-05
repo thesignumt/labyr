@@ -1,10 +1,16 @@
+from dataclasses import dataclass
+
 from . import getchar
 
 
+@dataclass
 class Player:
-    def __init__(self, x, y) -> None:
-        self.x = x
-        self.y = y
+    x: int
+    y: int
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
 
 
 class EntMan:
@@ -26,11 +32,11 @@ class EntMan:
         for lvl, lmap in levels.items():
             self._entities[lvl] = retTable(lmap)
 
-    def get(self, lvl: int, entity: str):
+    def get(self, lvl: int, entity: str) -> Player:
         return self._entities[lvl][entity]
 
 
-def handlemove(chars, curMap: list, entity: Player, move: str, cls):
+def handlemove(chars, curMap: list, entity: Player, move: str):
     if not isinstance(entity, Player):
         return
 
@@ -58,4 +64,4 @@ def handlemove(chars, curMap: list, entity: Player, move: str, cls):
             # curMap[ny][nx] = player_char
             # sleep(0.25)
             # curMap[ny][nx] = exit_char
-            cls.clvl += 1
+            return "ESCAPE"
