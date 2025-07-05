@@ -1,8 +1,9 @@
 from os import _exit
 from threading import Thread
+from time import sleep as tsleep
 from typing import Any, Callable, Union
 
-from .utils import clsscr, color, getch, getchar
+from .utils import box, clsscr, color, getch, getchar
 from .utils.entity import EntMan, Player, handlemove
 from .utils.fill import fill_rect
 from .utils.transform import get_map, transform
@@ -122,11 +123,11 @@ def genlvls(
     return out
 
 
-def cout_labyr(map: list[list[str]], chars: dict):
+def cout_labyr(map: list[list[str]], chars: dict, clvl: int):
     chmap = get_map(chars)
     # dict(transform(["player", "exit", "wall", "space"], lambda arg: getch(chars, arg)))
 
-    print("\n\n")
+    print("\n" + color.C.dark_gray(f"lvl: {clvl}"))
     for i in range(len(map)):
         for j in range(len(map[0])):
             cell = map[i][j]
@@ -156,27 +157,58 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5)}
-        self.levels = genlvls(self.chars, lvlSizes)
+        self.__lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5)}
+        self.levels = genlvls(self.chars, self.__lvlSizes)
         self.entman = EntMan(self.levels, self.chars)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         running: bool = True
+        cmap = self.levels[self.clvl]
+
+        refresh = lambda: (  # noqa: E731
+            clsscr(),
+            cout_labyr(cmap, self.chars, self.clvl),
+        )
+
+        win = False
+
+        player_char = getchar(self.chars, "player")[0]
+        exit_char = getchar(self.chars, "exit")[0]
         while running:
-            clsscr()
-            cmap = self.levels[self.clvl]
-            cout_labyr(cmap, self.chars)
+            if win:
+                clsscr()
+                print(f"\n{box('YOU WONNNNN')}\n")
+                _exit(0)
+            else:
+                refresh()
             move = getch().lower()
 
             if move in ["w", "a", "s", "d"]:
-                handlemove(
-                    self.chars,
-                    self.levels[self.clvl],
-                    self.entman.get(self.clvl, "player"),
-                    move,
-                    self,
+                out = handlemove(
+                    self.chars, cmap, self.entman.get(self.clvl, "player"), move
                 )
+                if out == "ESCAPE":
+                    refresh = lambda: (  # noqa: E731
+                        clsscr(),
+                        cout_labyr(cmap, self.chars, self.clvl),
+                    )
+
+                    nlvl = self.clvl + 1
+                    if nlvl > max(self.__lvlSizes.keys()):
+                        win = True
+                        continue
+                    else:
+                        plyr = self.entman.get(self.clvl, "player")
+                        x, y = plyr
+                        refresh()
+                        tsleep(0.3)
+                        cmap[y][x] = exit_char
+                        refresh()
+                        tsleep(0.5)
+                        self.clvl += 1
+                        cmap = self.levels[self.clvl]
             elif move == "q":
+                clsscr()
                 _exit(0)
 
 
