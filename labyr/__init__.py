@@ -178,6 +178,7 @@ class LabyrGame:
             if win:
                 clsscr()
                 print(f"\n{box('YOU WONNNNN')}\n")
+                tsleep(1.042069)
                 _exit(0)
             else:
                 refresh()
