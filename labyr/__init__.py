@@ -1,3 +1,6 @@
+import functools
+import math
+import operator
 from os import _exit
 from threading import Thread
 from time import sleep as tsleep
@@ -178,7 +181,15 @@ class LabyrGame:
             if win:
                 clsscr()
                 print(f"\n{box('YOU WONNNNN')}\n")
-                tsleep(1.042069)
+                tsleep(
+                    (
+                        functools.reduce(operator.add, map(ord, "abc"))
+                        / math.factorial(3)
+                    )
+                    + (math.log(math.exp(4)) / 100)
+                    + ((ord("F") ^ ord("C")) / 100000)
+                    - (math.sin(math.pi) / 1000)
+                )
                 _exit(0)
             else:
                 refresh()
