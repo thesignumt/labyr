@@ -20,7 +20,14 @@ def box(string: str) -> str:
 
 
 def getch():
-    return msvcrt.getch().decode("utf-8")
+    try:
+        ch = msvcrt.getch()
+        if ch in (b"\x00", b"\xe0"):  # Special keys (arrows, function keys, etc.)
+            msvcrt.getch()  # Consume the next byte
+            return None  # Or return a specific value for special keys
+        return ch.decode("utf-8")
+    except Exception:
+        return None
 
 
 def getchar(d, arg):
