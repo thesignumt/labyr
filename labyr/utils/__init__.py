@@ -24,10 +24,10 @@ def getch():
         ch = msvcrt.getch()
         if ch in (b"\x00", b"\xe0"):  # Special keys (arrows, function keys, etc.)
             msvcrt.getch()  # Consume the next byte
-            return None  # Or return a specific value for special keys
+            return ""  # Or return a specific value for special keys
         return ch.decode("utf-8")
     except Exception:
-        return None
+        return ""
 
 
 def getchar(d, arg):
