@@ -1,6 +1,7 @@
 # my ignores
 test/
 *.ps1
+_*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
