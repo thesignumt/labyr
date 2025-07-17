@@ -13,6 +13,19 @@ class Player:
         yield self.y
 
 
+# @dataclass
+# class Actiwall:
+#     x: int
+#     y: int
+#     goto: tuple[int, int]
+#     plate: tuple[int, int]
+#     platedir: str
+#
+#     def __iter__(self):
+#         yield self.x
+#         yield self.y
+
+
 class EntMan:
     """entity manager"""
 
@@ -23,10 +36,13 @@ class EntMan:
         def retTable(matrix: list[list[str]]):
             out = {}
             player_char = getchar(chars, "player")[0]
+            # actiwall_char = getchar(chars, "actiwall")[0]
             for y, row in enumerate(matrix):
                 for x, char in enumerate(row):
                     if char == player_char:
                         out["player"] = Player(x, y)
+                    # elif char == actiwall_char:
+                    #     out["actiwall"] = Actiwall(x, y)
             return out
 
         for lvl, lmap in levels.items():
@@ -58,10 +74,4 @@ def handlemove(chars, curMap: list, entity: Player, move: str):
         curMap[ny][nx] = player_char
         entity.x, entity.y = nx, ny
         if target == exit_char:
-            # sleep(0.25)
-            # curMap[ny][nx] = exit_char
-            # sleep(0.25)
-            # curMap[ny][nx] = player_char
-            # sleep(0.25)
-            # curMap[ny][nx] = exit_char
             return "ESCAPE"
