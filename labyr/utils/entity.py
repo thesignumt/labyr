@@ -13,17 +13,14 @@ class Player:
         yield self.y
 
 
-# @dataclass
-# class Actiwall:
-#     x: int
-#     y: int
-#     goto: tuple[int, int]
-#     plate: tuple[int, int]
-#     platedir: str
-#
-#     def __iter__(self):
-#         yield self.x
-#         yield self.y
+@dataclass
+class Actiwall:
+    pos: tuple[
+        int, int
+    ]  # original position also to return to when return pressure plate activated
+    goto: tuple[int, int]
+    plate: tuple[tuple[int, int], str]
+    retplate: tuple[tuple[int, int], str]
 
 
 class EntMan:
