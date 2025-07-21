@@ -66,6 +66,12 @@ def genlvls(
         for y, x in positions:
             out[lvl][y][x] = value
 
+    def rect(y1: int, x1: int, y2: int, x2: int):
+        return ((y1, x1), (y2, x2))
+
+    def srect(y: int, x: int):
+        return ((y, x), (y, x))
+
     level_defs = [
         # lvl 0 conf
         # #######
@@ -84,9 +90,9 @@ def genlvls(
             "player": [(1, 1)],
             "exit": [(1, -2)],
             "walls": [
-                ((2, 1), (2, 6)),
-                ((4, 2), (4, -3)),
-                ((1, -3), (3, -3)),
+                rect(2, 1, 2, 6),
+                rect(4, 2, 4, -3),
+                rect(1, -3, 3, -3),
             ],
             "spaces": [],
         },
@@ -100,17 +106,17 @@ def genlvls(
             "player": [(2, 1)],
             "exit": [(2, -2)],
             "walls": [
-                ((1, 1), (1, 3)),
-                ((1, -4), (1, -2)),
-                ((3, 1), (3, 3)),
-                ((3, -4), (3, -2)),
-                ((2, 5), (2, 6)),
+                rect(1, 1, 1, 3),
+                rect(1, -4, 1, -2),
+                rect(3, 1, 3, 3),
+                rect(3, -4, 3, -2),
+                rect(2, 5, 2, 6),
             ],
             "spaces": [
-                ((0, 0), (0, 2)),
-                ((-1, 0), (-1, 2)),
-                ((0, -3), (0, -1)),
-                ((-1, -3), (-1, -1)),
+                rect(0, 0, 0, 2),
+                rect(-1, 0, -1, 2),
+                rect(0, -3, 0, -1),
+                rect(-1, -3, -1, -1),
             ],
         },
         # lvl 3 conf
@@ -123,12 +129,12 @@ def genlvls(
             "player": [(1, 1)],
             "exit": [(2, -2)],
             "walls": [
-                ((2, 1), (2, 2)),
-                ((2, 4), (2, 4)),
-                ((1, 5), (1, 5)),
-                ((3, 6), (3, 6)),
-                ((3, -2), (3, -2)),
-                ((1, -3), (1, -2)),
+                rect(2, 1, 2, 2),
+                rect(2, 4, 2, 4),
+                rect(1, 5, 1, 5),
+                rect(3, 6, 3, 6),
+                rect(3, -2, 3, -2),
+                rect(1, -3, 1, -2),
             ],
             "spaces": [],
         },
@@ -155,6 +161,23 @@ def genlvls(
                     "plate": Dot({"pos": (1, 5), "dir": "d"}),
                     "retplate": Dot({"pos": (1, 9), "dir": "d"}),
                 },
+            ],
+            "spaces": [
+                rect(0, 0, 0, -1),
+                rect(1, 7, 3, 7),
+                rect(3, 4, 4, 6),
+                rect(3, 8, 4, 10),
+            ],
+            "walls": [
+                rect(0, 6, 0, 8),
+                rect(3, 5, 3, 6),
+                rect(3, 8, 3, 9),
+                rect(3, 1, 3, 3),
+                rect(3, -1, 3, -3),
+                rect(4, 0, 5, 2),
+                rect(4, -3, 5, -1),
+                srect(4, 3),
+                srect(4, -4),
             ],
         },
     ]
@@ -234,7 +257,7 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        self.__lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5), 4: (15, 3)}
+        self.__lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5), 4: (15, 6)}
         self.levels = genlvls(self.chars, self.__lvlSizes)
         self.entman = EntMan(self.levels, self.chars)
 
