@@ -1,16 +1,13 @@
-import functools
-import math
-import operator
 from sys import exit as _exit
-from threading import Thread
 from time import sleep as tsleep
-from typing import Any, Callable, Union
+from typing import Any
 
 from ._secret import Secret
 from .utils import box, clsscr, color, getch, getchar
+from .utils.dot import Dot
 from .utils.entity import Actiwall, EntMan, Player, handlemove
 from .utils.fill import fill_rect
-from .utils.transform import get_map, transform
+from .utils.transform import get_map
 
 __all__ = ["labyr", "LabyrGame"]
 
@@ -37,9 +34,6 @@ def genlvls(
     for lvl, dimen in lvlSizes.items():
         out[lvl] = init(dimen)
 
-    # lvl configs
-    # out[lvl][y][x]
-
     space_char = getchar(chars, "space")[0]
     wall_char = getchar(chars, "wall")[0]
     actiwall_char = getchar(chars, "actiwall")[0]
@@ -60,6 +54,15 @@ def genlvls(
             )
         else:
             value = char
+
+        # Normalize positions to a list of tuples
+        if (
+            isinstance(positions, tuple)
+            and len(positions) == 2
+            and all(isinstance(i, int) for i in positions)
+        ):
+            positions = [positions]
+
         for y, x in positions:
             out[lvl][y][x] = value
 
@@ -136,29 +139,32 @@ def genlvls(
         {
             "player": [(1, 1)],
             "exit": [(1, -2)],
-            "walls": [],
             "actiwalls": [
                 {
                     "pos": (1, 6),
                     "goto": (0, 7),
-                    "plate": ((1, 5), "d"),
-                    "retplate": ((1, 9), "d"),
+                    "plate": Dot({"pos": (1, 5), "dir": "d"}),
+                    "retplate": Dot({"pos": (1, 9), "dir": "d"}),
                 },
                 {
                     "pos": (1, 8),
                     "goto": (2, 7),
-                    "plate": ((1, 5), "d"),
-                    "retplate": ((1, 9), "d"),
+                    "plate": Dot({"pos": (1, 5), "dir": "d"}),
+                    "retplate": Dot({"pos": (1, 9), "dir": "d"}),
                 },
             ],
         },
     ]
 
     for lvl, conf in enumerate(level_defs):
+        for k in ["walls", "spaces"]:
+            conf.setdefault(k, [])
         set_chars(out, lvl, conf["player"], player_char)
         set_chars(out, lvl, conf["exit"], exit_char)
-        for actiwall_ in conf["actiwalls"]:
-            set_chars(out, lvl, actiwall_["pos"], actiwall_char, actiwall=actiwall_)
+        if conf.get("actiwalls"):
+            for actiwall_ in conf["actiwalls"]:
+                set_chars(out, lvl, actiwall_["pos"], actiwall_char, actiwall=actiwall_)
+                set_chars(out, lvl, actiwall_["goto"], space_char)
         for start, end in conf["walls"]:
             fill_rect(out[lvl], start, end, wall_char)
         for start, end in conf["spaces"]:
@@ -167,21 +173,41 @@ def genlvls(
     return out
 
 
-def cout_labyr(map: list[list[str]], chars: dict, clvl: int):
+def cout_labyr(map: list[list[str]], chars: dict, clvl: int, entman: EntMan):
     chmap = get_map(chars)
-    # dict(transform(["player", "exit", "wall", "space"], lambda arg: getch(chars, arg)))
 
-    print("\n" + color.C.dark_gray(f"lvl: {clvl}"))
-    for i in range(len(map)):
-        for j in range(len(map[0])):
-            cell = map[i][j]
+    dir_map = {"w": "↑", "a": "←", "s": "↓", "d": "→"}
+    revdir_map = {"w": "⇑", "a": "⇐", "s": "⇓", "d": "⇒"}
+    actiwalls: list[Actiwall] = entman.get(clvl, "actiwalls")
+    plate_pos: dict = {aw.plate.pos: dir_map.get(aw.plate.dir, "?") for aw in actiwalls}
+    retplate_pos: dict = {
+        aw.retplate.pos: revdir_map.get(aw.retplate.dir, "¿") for aw in actiwalls
+    }
+
+    DARKGRAY = color.C.dark_gray
+    print("\n" + DARKGRAY(f"lvl: {clvl}"))
+    for y, row in enumerate(map):
+        for x, cell in enumerate(row):
+            # Handle actiwall plate rendering
+            px, py = entman.get(clvl, "player")
+            if (y, x) != (py, px):
+                if (y, x) in plate_pos:
+                    print(DARKGRAY(plate_pos[(y, x)]), end="")
+                    continue
+                if (y, x) in retplate_pos:
+                    print(DARKGRAY(retplate_pos[(y, x)]), end="")
+                    continue
+
             ch = cell[0]
+
             if ch != "$" and ch in chmap:
                 print(chmap[ch](ch), end="")
-            elif cell.startswith("$M"):  # e.g. str: "$M1" means monster #1
+            elif isinstance(cell, str) and cell.startswith("$M"):
                 print(chmap["M"]("M"), end="")
             elif isinstance(cell, tuple):
-                print(chmap[cell[0]](cell[0]), end="")
+                print(chmap[ch](ch), end="")
+            else:
+                print(cell, end="")
         print()
 
 
@@ -228,12 +254,11 @@ class LabyrGame:
 
         refresh = lambda: (  # noqa: E731
             clsscr(),
-            cout_labyr(cmap, self.chars, self.clvl),
+            cout_labyr(cmap, self.chars, self.clvl, entman=self.entman),
         )
 
         win = False
 
-        player_char = getchar(self.chars, "player")[0]
         exit_char = getchar(self.chars, "exit")[0]
         while running:
             if win:
@@ -246,13 +271,11 @@ class LabyrGame:
             move = getch().lower()
 
             if move in ["w", "a", "s", "d"]:
-                out = handlemove(
-                    self.chars, cmap, self.entman.get(self.clvl, "player"), move
-                )
+                out = handlemove(self.chars, self.clvl, cmap, self.entman, move)
                 if out == "ESCAPE":
                     refresh = lambda: (  # noqa: E731
                         clsscr(),
-                        cout_labyr(cmap, self.chars, self.clvl),
+                        cout_labyr(cmap, self.chars, self.clvl, entman=self.entman),
                     )
 
                     nlvl = self.clvl + 1
@@ -271,6 +294,8 @@ class LabyrGame:
                         cmap = self.levels[self.clvl]
             elif move == "r":
                 self.levels = genlvls(self.chars, self.__lvlSizes)
+                self.entman = EntMan(self.levels, self.chars)
+                cmap = self.levels[self.clvl]
                 clsscr()
             elif move == "q":
                 clsscr()

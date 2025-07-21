@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from . import getchar
+from . import deltemp, getchar
+from .dot import Dot
 
 
 @dataclass
@@ -19,56 +20,80 @@ class Actiwall:
         int, int
     ]  # original position also to return to when return pressure plate activated
     goto: tuple[int, int]
-    plate: tuple[tuple[int, int], str]
-    retplate: tuple[tuple[int, int], str]
+    plate: Dot
+    retplate: Dot
+    activated: bool = False
 
 
 class EntMan:
     """entity manager"""
 
-    def __init__(self, levels: dict[int, list[list[str]]], chars) -> None:
+    def __init__(self, levels, chars) -> None:
         self.lvls = levels
         self._entities = {}
 
-        def retTable(matrix: list[list[str]]):
+        def retTable(matrix: list[list[str | tuple]]):
             out = {}
             player_char = getchar(chars, "player")[0]
-            # actiwall_char = getchar(chars, "actiwall")[0]
+            actiwall_char = getchar(chars, "actiwall")[0]
+            actiwalls: list[Actiwall] = []
             for y, row in enumerate(matrix):
                 for x, char in enumerate(row):
                     if char == player_char:
                         out["player"] = Player(x, y)
-                    # elif char == actiwall_char:
-                    #     out["actiwall"] = Actiwall(x, y)
+                    elif isinstance(char, tuple) and char[0] == actiwall_char:
+                        actiwalls.append(char[1])
+                    else:
+                        print(char)
+            out["actiwalls"] = actiwalls
             return out
 
         for lvl, lmap in levels.items():
             self._entities[lvl] = retTable(lmap)
 
-    def get(self, lvl: int, entity: str) -> Player:
+    def get(self, lvl: int, entity: str):
         return self._entities[lvl][entity]
 
 
-def handlemove(chars, curMap: list, entity: Player, move: str):
-    if not isinstance(entity, Player):
-        return
-
-    x, y = entity.x, entity.y
+def handlemove(chars, clvl, cmap: list, entman: EntMan, move: str):
+    x, y = entman.get(clvl, "player")
     move_offsets = {"w": (0, -1), "a": (-1, 0), "s": (0, 1), "d": (1, 0)}
     dx, dy = move_offsets.get(move, (0, 0))
     nx, ny = x + dx, y + dy
 
-    if not (0 <= ny < len(curMap) and 0 <= nx < len(curMap[0])):
+    if not (0 <= ny < len(cmap) and 0 <= nx < len(cmap[0])):
         return
 
     player_char = getchar(chars, "player")[0]
     space_char = getchar(chars, "space")[0]
     exit_char = getchar(chars, "exit")[0]
-    target = curMap[ny][nx]
+    actiwall_char = getchar(chars, "actiwall")[0]
+    target = cmap[ny][nx]
 
     if target in (space_char, exit_char):
-        curMap[y][x] = space_char
-        curMap[ny][nx] = player_char
-        entity.x, entity.y = nx, ny
+        cmap[y][x] = space_char
+        cmap[ny][nx] = player_char
+        entman._entities[clvl]["player"].x, entman._entities[clvl]["player"].y = nx, ny
         if target == exit_char:
             return "ESCAPE"
+
+    for actiwall in entman.get(clvl, "actiwalls"):
+        _gty, _gtx = actiwall.goto
+        _posy, _posx = actiwall.pos
+        if (  # activate actiwall
+            (ny, nx) == actiwall.plate.pos
+            and move == actiwall.plate.dir
+            and not actiwall.activated
+        ):
+            actiwall.activated = True
+            cmap[_gty][_gtx] = actiwall_char
+            cmap[_posy][_posx] = space_char
+            deltemp()
+        elif (
+            (ny, nx) == actiwall.retplate.pos
+            and move == actiwall.retplate.dir
+            and actiwall.activated
+        ):
+            actiwall.activated = False
+            cmap[_gty][_gtx] = space_char
+            cmap[_posy][_posx] = actiwall_char
