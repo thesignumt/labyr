@@ -1,5 +1,6 @@
 """The Color module for labyr"""
 
+# TODO: change from using colorama to use rgb(r, g, b)(string)
 __all__ = ["C"]
 
 from colorama import Fore, Style, init
