@@ -14,7 +14,8 @@ def get_version():
 def run_labyr(level=0, movement="neovim"):
     from .__init__ import LabyrGame
 
-    LabyrGame(level=level, movement=movement)
+    game = LabyrGame(level=level, movement=movement)
+    game()
 
 
 def hash_secret(value: str) -> str:
