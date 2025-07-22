@@ -44,8 +44,6 @@ class EntMan:
                         out["player"] = Player(x, y)
                     elif isinstance(char, tuple) and char[0] == actiwall_char:
                         actiwalls.append(char[1])
-                    else:
-                        print(char)
             out["actiwalls"] = actiwalls
             return out
 
