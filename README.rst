@@ -6,3 +6,7 @@ labyr
 =====
 
 A labyrinth game
+
+Compatibility
+=============
+This project only supports windows and will potentially support linux.
