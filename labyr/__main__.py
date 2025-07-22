@@ -11,10 +11,10 @@ def get_version():
         return "unknown"
 
 
-def run_labyr(level=None):
-    from .__init__ import labyr
+def run_labyr(level=0, movement="neovim"):
+    from .__init__ import LabyrGame
 
-    labyr(level=level)
+    LabyrGame(level=level, movement=movement)
 
 
 def hash_secret(value: str) -> str:
@@ -47,6 +47,13 @@ def main():
         metavar="x",
         help="Set the labyrinth level (number)",
     )
+    parser.add_argument(
+        "-m",
+        "--movement",
+        choices=["neovim", "roblox"],
+        default="neovim",
+        help="Set the movement type (neovim, roblox). Default: neovim",
+    )
     parser.add_argument("--devtest", action="store_true", help="devtest")
     parser.add_argument(
         "action",
@@ -60,7 +67,10 @@ def main():
         return
     if not args.action:
         parser.error("the following arguments are required: action")
-    actions = {"run": lambda: run_labyr(level=args.level), "nil": lambda: None}
+    actions = {
+        "run": lambda: run_labyr(level=args.level, movement=args.movement),
+        "nil": lambda: None,
+    }
     actions[args.action]()
 
 

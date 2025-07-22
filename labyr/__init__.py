@@ -3,18 +3,20 @@ from time import sleep as tsleep
 from typing import Any
 
 from ._secret import Secret
-from .utils import box, clsscr, color, getch, getchar
+from .utils import box, clsscr, color, deltemp, getch, getchar
 from .utils.dot import Dot
-from .utils.entity import Actiwall, EntMan, Player, handlemove
+from .utils.entity import Actiwall, EntMan, handlemove
 from .utils.fill import fill_rect
+from .utils.genv import _G
 from .utils.transform import get_map
 
 __all__ = ["labyr", "LabyrGame"]
 
+U, D, L, R = _G.movement
+
 
 def genlvls(
     chars: dict,
-    lvlSizes: dict[int, tuple[int, int]],
 ):
     out = {}
 
@@ -31,7 +33,7 @@ def genlvls(
 
         return grid
 
-    for lvl, dimen in lvlSizes.items():
+    for lvl, dimen in _G.lvlSizes.items():
         out[lvl] = init(dimen)
 
     space_char = getchar(chars, "space")[0]
@@ -152,20 +154,20 @@ def genlvls(
                 {
                     "pos": (2, 6),
                     "goto": (1, 7),
-                    "plate": Dot({"pos": (2, 5), "dir": "d"}),
-                    "retplate": Dot({"pos": (2, 9), "dir": "d"}),
+                    "plate": Dot({"pos": (2, 5), "dir": R}),
+                    "retplate": Dot({"pos": (2, 9), "dir": R}),
                 },
                 {
                     "pos": (2, 8),
                     "goto": (3, 7),
-                    "plate": Dot({"pos": (2, 5), "dir": "d"}),
-                    "retplate": Dot({"pos": (2, 9), "dir": "d"}),
+                    "plate": Dot({"pos": (2, 5), "dir": R}),
+                    "retplate": Dot({"pos": (2, 9), "dir": R}),
                 },
                 {
                     "pos": (4, 7),
                     "goto": (5, 7),
-                    "plate": Dot({"pos": (4, 8), "dir": "a"}),
-                    "retplate": Dot({"pos": (4, 6), "dir": "a"}),
+                    "plate": Dot({"pos": (4, 8), "dir": L}),
+                    "retplate": Dot({"pos": (4, 6), "dir": L}),
                 },
             ],
             "spaces": [
@@ -187,6 +189,21 @@ def genlvls(
                 rect(3, -1, 3, -3),
                 rect(1, 1, 1, 6),
                 rect(1, 6, 1, -2),
+            ],
+        },
+        # lvl 5 conf
+        # #######
+        # #.@.&E#
+        # ####.##
+        {
+            "player": [(1, 2)],
+            "exit": [(1, -2)],
+            "actiwalls": [
+                {
+                    "pos": (1, -3),
+                    "goto": (2, -3),
+                    "plate": Dot({"pos": (1, 1), "dir": ""}),
+                }
             ],
         },
     ]
@@ -211,8 +228,13 @@ def genlvls(
 def cout_labyr(map: list[list[str]], chars: dict, clvl: int, entman: EntMan):
     chmap = get_map(chars)
 
-    dir_map = {"w": "↑", "a": "←", "s": "↓", "d": "→"}
-    revdir_map = {"w": "⇑", "a": "⇐", "s": "⇓", "d": "⇒"}
+    _directions = [U, L, D, R]
+    _arrows = ["↑", "←", "↓", "→"]
+    _revarrows = ["⇑", "⇐", "⇓", "⇒"]
+    dir_map = dict(zip(_directions, _arrows))
+    revdir_map = dict(zip(_directions, _revarrows))
+    deltemp()
+
     actiwalls: list[Actiwall] = entman.get(clvl, "actiwalls")
     plate_pos: dict = {aw.plate.pos: dir_map.get(aw.plate.dir, "?") for aw in actiwalls}
     retplate_pos: dict = {
@@ -247,7 +269,11 @@ def cout_labyr(map: list[list[str]], chars: dict, clvl: int, entman: EntMan):
 
 
 class LabyrGame:
-    def __init__(self, *, level=0) -> None:
+    def __init__(self, *, level=0, movement="neovim") -> None:
+        _G.clear()
+        _G.movement = {"neovim": ["k", "j", "h", "l"], "roblox": ["w", "s", "a", "d"]}[
+            movement
+        ]
         c = color.C()
         self.clvl = level
         self.chars = {
@@ -266,13 +292,20 @@ class LabyrGame:
             "exit": ("E", c.green),
             "monster": ("M", c.red),
         }
-        self.__lvlSizes = {0: (7, 3), 1: (11, 7), 2: (12, 5), 3: (11, 5), 4: (15, 6)}
-        self.levels = genlvls(self.chars, self.__lvlSizes)
+        _G.__lvlSizes = {
+            0: (7, 3),
+            1: (11, 7),
+            2: (12, 5),
+            3: (11, 5),
+            4: (15, 6),
+            5: (7, 3),
+        }
+        self.levels = genlvls(self.chars)
         self.entman = EntMan(self.levels, self.chars)
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         level = kwds.get("level")
-        valid_levels = self.__lvlSizes.keys()
+        valid_levels = _G.lvlsizes.keys()
         if isinstance(level, int) and level in valid_levels:
             self.clvl = level
         else:
@@ -305,7 +338,7 @@ class LabyrGame:
                 refresh()
             move = getch().lower()
 
-            if move in ["w", "a", "s", "d"]:
+            if move in _G.movement:
                 out = handlemove(self.chars, self.clvl, cmap, self.entman, move)
                 if out == "ESCAPE":
                     refresh = lambda: (  # noqa: E731
@@ -314,7 +347,7 @@ class LabyrGame:
                     )
 
                     nlvl = self.clvl + 1
-                    if nlvl > max(self.__lvlSizes.keys()):
+                    if nlvl > max(_G.lvlsizes.keys()):
                         win = True
                         continue
                     else:
@@ -328,7 +361,7 @@ class LabyrGame:
                         self.clvl += 1
                         cmap = self.levels[self.clvl]
             elif move == "r":
-                self.levels = genlvls(self.chars, self.__lvlSizes)
+                self.levels = genlvls(self.chars)
                 self.entman = EntMan(self.levels, self.chars)
                 cmap = self.levels[self.clvl]
                 clsscr()
