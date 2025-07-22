@@ -161,6 +161,12 @@ def genlvls(
                     "plate": Dot({"pos": (2, 5), "dir": "d"}),
                     "retplate": Dot({"pos": (2, 9), "dir": "d"}),
                 },
+                {
+                    "pos": (4, 7),
+                    "goto": (5, 7),
+                    "plate": Dot({"pos": (4, 8), "dir": "a"}),
+                    "retplate": Dot({"pos": (4, 6), "dir": "a"}),
+                },
             ],
             "spaces": [
                 rect(0, 0, 0, 5),
