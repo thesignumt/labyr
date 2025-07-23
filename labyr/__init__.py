@@ -321,7 +321,9 @@ class LabyrGame:
             move = getch().lower()
 
             if move in self.movement:
-                out = handlemove(self.chars, self.clvl, cmap, self.entman, move)
+                out = handlemove(
+                    self.chars, self.clvl, cmap, self.entman, move, self.movement
+                )
                 if out == "ESCAPE":
                     refresh = lambda: (  # noqa: E731
                         clsscr(),
