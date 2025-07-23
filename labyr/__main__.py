@@ -14,7 +14,7 @@ def get_version():
 def run_labyr(level=0, movement="neovim"):
     from .__init__ import LabyrGame
 
-    game = LabyrGame(level=level, movement=movement)
+    game = LabyrGame(movement=movement)
     game()
 
 
