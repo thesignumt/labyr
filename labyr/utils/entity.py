@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from . import deltemp, getchar
 from .dot import Dot
-from .genv import _G
 
 
 @dataclass
@@ -54,9 +53,9 @@ class EntMan:
         return self._entities[lvl][entity]
 
 
-def handlemove(chars, clvl, cmap: list, entman: EntMan, move: str):
+def handlemove(chars, clvl, cmap: list, entman: EntMan, move: str, movement):
     x, y = entman.get(clvl, "player")
-    U, D, L, R = _G.movement
+    U, D, L, R = movement
     move_offsets = {U: (0, -1), L: (-1, 0), D: (0, 1), R: (1, 0)}
     dx, dy = move_offsets.get(move, (0, 0))
     nx, ny = x + dx, y + dy

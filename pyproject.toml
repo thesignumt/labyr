@@ -1,6 +1,6 @@
 [project]
 name = "labyr"
-version = "0.8.2"
+version = "0.8.3"
 description = "A labyrinth game."
 authors = [
     {name = "sigmacodeslol", email = "tcrrxzz@gmail.com"}
