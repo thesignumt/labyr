@@ -19,14 +19,6 @@ def box(string: str) -> str:
     return f"{border}\n" + "\n".join(boxed_lines) + f"\n{border}"
 
 
-def deltemp():
-    import sys
-
-    for var in tuple(sys._getframe(1).f_locals):
-        if var[0] == "_":
-            sys._getframe(1).f_locals.pop(var, None)
-
-
 def getch():
     try:
         ch = msvcrt.getch()
