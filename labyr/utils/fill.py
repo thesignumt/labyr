@@ -49,3 +49,11 @@ def fill_unbound(map: Matrix, target_char: str, fill_char: str) -> Matrix:
                 visited[nr][nc] = True
 
     return map
+
+
+def rect(y1: int, x1: int, y2: int, x2: int):
+    return ((y1, x1), (y2, x2))
+
+
+def srect(y: int, x: int):
+    return ((y, x), (y, x))
