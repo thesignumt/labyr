@@ -14,7 +14,7 @@ def get_version():
 def run_labyr(level=0, movement="neovim"):
     from .__init__ import LabyrGame
 
-    game = LabyrGame(movement=movement)
+    game = LabyrGame(level=level, movement=movement)
     game()
 
 
@@ -30,6 +30,9 @@ def dev_test():
         print("success authentication")
 
 
+# +--------------------------------------------------------+
+# [                          main                          ]
+# +--------------------------------------------------------+
 def main():
     parser = argparse.ArgumentParser(
         description="labyr: a labyrinth game || DISCLAIMER: if you run labyr, each frame will clear the terminal screen."
@@ -69,7 +72,9 @@ def main():
     if not args.action:
         parser.error("the following arguments are required: action")
     actions = {
-        "run": lambda: run_labyr(level=args.level, movement=args.movement),
+        "run": lambda: run_labyr(
+            level=args.level if args.level is not None else 0, movement=args.movement
+        ),
         "nil": lambda: None,
     }
     actions[args.action]()
