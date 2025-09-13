@@ -3,7 +3,7 @@ name = "labyr"
 version = "0.8.4"
 description = "A labyrinth game."
 authors = [
-    {name = "sigmacodeslol", email = "tcrrxzz@gmail.com"}
+    {name = "thesignumt", email = "tcrrxzz@gmail.com"}
 ]
 license = "MIT"
 readme = "README.rst"
@@ -23,7 +23,7 @@ classifiers = [
 labyr = "labyr.__main__:main"
 
 [project.urls]
-Repository = "https://github.com/sigmacodeslol/labyr.git"
+Repository = "https://github.com/thesignumt/labyr.git"
 
 
 [build-system]
